@@ -56,8 +56,6 @@ module.exports = function gulpGhPages(options) {
         return;
       }
 
-      var newBranchCreated = false;
-
       git.prepareRepo(options.remoteUrl, origin, options.cacheDir || '.publish')
       .then(function(repo) {
         gutil.log(TAG, 'Cloning repo');
@@ -72,18 +70,12 @@ module.exports = function gulpGhPages(options) {
         }
 
         gutil.log(TAG, 'Create branch `' + branch + '` and checkout');
-        newBranchCreated = true;
         return repo.createAndCheckoutBranch(branch);
       })
       .then(function(repo) {
         return wrapPromise(function(resolve, reject) {
-          if (!newBranchCreated){
-            if(repo._remoteBranches.indexOf(repo._currentBranch) === -1){
-              newBranchCreated = true
-            }
-          }
-
-          if (newBranchCreated) {
+          var hasCurrentBranch = (repo._remoteBranches.indexOf(repo._currentBranch) > -1);
+          if (!hasCurrentBranch){
             resolve(repo);
             return;
           }
