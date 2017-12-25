@@ -77,6 +77,12 @@ module.exports = function gulpGhPages(options) {
       })
       .then(function(repo) {
         return wrapPromise(function(resolve, reject) {
+          if (!newBranchCreated){
+            if(repo._remoteBranches.indexOf(repo._currentBranch) === -1){
+              newBranchCreated = true
+            }
+          }
+
           if (newBranchCreated) {
             resolve(repo);
             return;
